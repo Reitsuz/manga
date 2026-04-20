@@ -4,6 +4,15 @@ WORKDIR /app
 
 COPY . .
 
+# .env 強制作成
+RUN echo "APP_NAME=Manga" > .env
+RUN echo "APP_ENV=production" >> .env
+RUN echo "APP_DEBUG=false" >> .env
+RUN echo "APP_URL=http://localhost" >> .env
+RUN echo "SESSION_DRIVER=cookie" >> .env
+RUN echo "CACHE_STORE=array" >> .env
+RUN echo "QUEUE_CONNECTION=sync" >> .env
+
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev \
     && docker-php-ext-install zip
@@ -12,8 +21,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN composer install --no-dev --optimize-autoloader
 
-RUN php artisan key:generate || true
-RUN php artisan config:cache || true
+RUN php artisan key:generate
+RUN php artisan config:cache
 
 EXPOSE 10000
 
